@@ -1,13 +1,14 @@
-open Hardcaml
-open Signal
+open! Core
+open! Hardcaml
+open! Signal
 
 module I = struct 
-    type 'a t = { input_signal : 'a [@bits 1]}
+    type 'a t = { input_signal : 'a [@bits 10]}
     [@@deriving sexp_of, hardcaml, compare]
 end
 
 module O = struct
-    type 'a t = { output_signal : 'a [@bits 1]}
+    type 'a t = { output_signal : 'a [@bits 10]}
     [@@deriving sexp_of, hardcaml, compare]
 end
 
