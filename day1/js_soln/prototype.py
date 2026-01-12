@@ -1,7 +1,7 @@
 """
     Read in file line by line, for each line if L subtract, if R add. Every time total == 0, count++
 """
-debugon = False
+debugon = True
 
 def lazy_open_read(filename):
     with open(filename, 'r') as f:
@@ -15,6 +15,7 @@ def day1pt1(in_filename, dial_width):
         cnt = 0
         turn = 0
         for direction, amnt in lazy_open_read(in_filename):
+            if (debugon): print(f'sum total {total} turn amnt {amnt} direction {direction} \n cnt total {cnt}')
             if direction == 'L': total = (total - amnt) % dial_width
             else:   total = (total + amnt) % dial_width
 

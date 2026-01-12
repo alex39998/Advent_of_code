@@ -18,8 +18,19 @@ let () =
   let inputs = Cyclesim.inputs sim in
   let outputs = Cyclesim.outputs sim in
 
-  let fin = In_channel.create "test2.txt" in
-  try
+  inputs.clock := Bits.vdd;
+  inputs.reset := Bits.vdd;
+  inputs.enable := Bits.gnd;
+  inputs.turn_amnt := Bits.zero 32;
+  
+  Cyclesim.cycle sim;
+
+  inputs.reset := Bits.gnd; 
+  Cyclesim.cycle sim;
+
+  inputs.enable := Bits.vdd;
+  let fin = In_channel.create "in.txt" in
+  (try
     while true do
         let line = In_channel.input_line_exn fin |> String.strip in
 
@@ -32,15 +43,21 @@ let () =
           | _ -> failwith (sprintf "Invalid leading char %c" sign_ch)
         in
 
-        (* let value = Int.of_string (String.strip line) in *)
-        inputs.input_signal := Bits.of_int_trunc ~width:10 value;
+        inputs.turn_amnt := Bits.of_int_trunc ~width:32 value;
         Cyclesim.cycle sim;
 
-        let output_val = Bits.to_signed_int !(outputs.output_signal) in
-        printf "Input: %d makes Output: %d\n" value output_val
+        let output_val = Bits.to_signed_int !(outputs.res_day1) in
+        let total_reg = Bits.to_signed_int !(outputs.total_day1_dbg) in
+        printf "Input: %d makes Output: %d\n Reg: %d\n" value output_val total_reg
     done
   with End_of_file -> 
-    In_channel.close fin;
+    In_channel.close fin);
+
+  inputs.enable := Bits.gnd;
+  printf "\n -- Final cycles (enable disabled) -- \n";
+  for _ = 1 to 10 do
+    Cyclesim.cycle sim;
+  done;
   
   (* Show waveform *)
   (*Waveform.print ~display_height:10 ~display_width:500 waves;*)
