@@ -3,6 +3,8 @@ open! Hardcaml
 open! Hardcaml_waveterm
 open! Hardcaml_test_harness
 
+let dial_size = 100
+
 let () =
   let module Sim = Cyclesim.With_interface(Wire.I)(Wire.O) in
 
@@ -38,8 +40,8 @@ let () =
         let num_str = String.sub line ~pos:1 ~len:(String.length line - 1) in
         let abs_num = Int.of_string num_str in
         let value = match sign_ch with
-          | 'L' -> -abs_num
-          | 'R' -> abs_num
+          | 'L' -> -(abs_num % dial_size)
+          | 'R' -> (abs_num % dial_size)
           | _ -> failwith (sprintf "Invalid leading char %c" sign_ch)
         in
 
