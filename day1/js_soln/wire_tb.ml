@@ -46,9 +46,12 @@ let () =
         inputs.turn_amnt_day1 := Bits.of_int_trunc ~width:32 value;
         Cyclesim.cycle sim;
 
-        let output_val = Bits.to_signed_int !(outputs.res_day1) in
         let total_reg = Bits.to_signed_int !(outputs.total_day1_dbg) in
-        printf "Input: %d makes Output: %d\n Reg: %d\n" value output_val total_reg
+        (* let output_val = Bits.to_signed_int !(outputs.res_day1) in
+        printf "Input: %d makes Output: %d\n Reg: %d\n" value output_val total_reg *)
+
+        let output_pt2_val = Bits.to_signed_int !(outputs.res_pt2) in
+        printf "Input: %d makes Output: %d \n Reg: %d\n" value output_pt2_val total_reg
     done
   with End_of_file -> 
     In_channel.close fin);
@@ -58,7 +61,8 @@ let () =
   for _ = 1 to 10 do
     Cyclesim.cycle sim;
   done;
-  printf "Day1pt1 result: %d \n" (Bits.to_signed_int !(outputs.res_day1))
+  printf "Day1pt1 result: %d \n" (Bits.to_signed_int !(outputs.res_day1));
+  printf "Day1pt2 result: %d \n" (Bits.to_signed_int !(outputs.res_pt2));
   
   (* Show waveform *)
   (*Waveform.print ~display_height:10 ~display_width:500 waves;*)

@@ -20,6 +20,7 @@ end
 module O = struct
     type 'a t = { 
         res_day1 : 'a [@bits 32]
+        ; res_pt2 : 'a [@bits 32]
         ; total_day1_dbg : 'a [@bits 64]
     }
     [@@deriving sexp_of, hardcaml, compare]
@@ -32,6 +33,7 @@ let create (input : Signal.t I.t) : Signal.t O.t =
     let one = Signal.of_int_trunc ~width:input_width 1 in
 
     let dial_size_sig_accum = sresize dial_size_sig ~width:accum_width in
+    let _one_accum = sresize one ~width:accum_width in
 
     let fold_step (r,q) = 
         let greater_eq = r >=+ dial_size_sig in
@@ -74,7 +76,7 @@ let create (input : Signal.t I.t) : Signal.t O.t =
         (q10, r10)
     in
 
-    let _quot100, rem100 = turn_divmod100 in
+    let quot100, rem100 = turn_divmod100 in
 
     let total_day1 = Signal.reg_fb spec ~width:accum_width ~f:(fun total -> 
         mux2 input.reset 
@@ -91,16 +93,27 @@ let create (input : Signal.t I.t) : Signal.t O.t =
     let res_day1 = Signal.reg_fb spec ~width:input_width ~f:(fun res -> 
         mux2 (input.enable &: (total_day1 ==: zero accum_width)) (res +: Signal.of_int_trunc ~width:input_width 1) res
     ) in
-
-(*    let total_pt2 = Signal.reg_fb spec ~width:accum_width ~f:(fun total ->
-        mux2 input.reset
-            (Signal.of_int_trunc ~width:accum_width start_amnt)
-            ()
-    ) in
     
-    let res_pt2 = Signal.reg_fb spec ~width:input_width ~f:() in *)
+    let res_pt2 = Signal.reg_fb spec ~width:input_width ~f:(fun res ->
+        mux2 input.enable
+            (let isleft = input.turn_amnt_day1 <+ zero input_width in
+            let abs_quot100 = mux2 isleft (zero input_width -: quot100) quot100 in
+            let add_cross = 
+                mux2 isleft 
+                    (mux2 ((total_day1 >: zero accum_width) &: (total_day1 <=: (sresize (zero input_width -: rem100) ~width:accum_width) )) 
+                        one
+                        (zero input_width) )
+                    (let tmp_sum = total_day1 +: sresize rem100 ~width:accum_width in
+                    mux2 (tmp_sum >=+ dial_size_sig_accum)
+                        one
+                        (zero input_width))
+            in
+            res +: abs_quot100 +: add_cross )
+            res
+    ) in
 
     {
         res_day1
+        ; res_pt2
         ; total_day1_dbg = total_day1
     }

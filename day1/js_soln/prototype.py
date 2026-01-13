@@ -1,7 +1,7 @@
 """
     Read in file line by line, for each line if L subtract, if R add. Every time total == 0, count++
 """
-debugon = True
+debugon = False
 
 def lazy_open_read(filename):
     with open(filename, 'r') as f:
@@ -36,6 +36,7 @@ def pythonic_d1pt2(in_filename, dial_width):
             if total + tail >= dial_width: cnt +=1
         
         total = (total - amnt)%dial_width if direction == 'L' else (total + amnt)%dial_width 
+        if (debugon): print(f'Input: {-amnt if direction == "L" else amnt} makes Output: {cnt} \n Reg: {total}')
     return cnt
 
 def main():
