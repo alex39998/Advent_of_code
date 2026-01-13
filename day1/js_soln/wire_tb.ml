@@ -46,12 +46,12 @@ let () =
         inputs.turn_amnt_day1 := Bits.of_int_trunc ~width:32 value;
         Cyclesim.cycle sim;
 
-        let total_reg = Bits.to_signed_int !(outputs.total_day1_dbg) in
-        (* let output_val = Bits.to_signed_int !(outputs.res_day1) in
-        printf "Input: %d makes Output: %d\n Reg: %d\n" value output_val total_reg *)
+        (* let total_reg = Bits.to_signed_int !(outputs.total_day1_dbg) in
+        let output_val = Bits.to_signed_int !(outputs.res_day1) in
+        printf "Input: %d makes Output: %d\n Reg: %d\n" value output_val total_reg
 
         let output_pt2_val = Bits.to_signed_int !(outputs.res_pt2) in
-        printf "Input: %d makes Output: %d \n Reg: %d\n" value output_pt2_val total_reg
+        printf "Input: %d makes Output: %d \n Reg: %d\n" value output_pt2_val total_reg *)
     done
   with End_of_file -> 
     In_channel.close fin);
