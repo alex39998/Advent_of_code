@@ -3,8 +3,6 @@ open! Hardcaml
 open! Hardcaml_waveterm
 open! Hardcaml_test_harness
 
-let dial_size = 100
-
 let () =
   let module Sim = Cyclesim.With_interface(Wire.I)(Wire.O) in
 
@@ -23,7 +21,7 @@ let () =
   inputs.clock := Bits.vdd;
   inputs.reset := Bits.vdd;
   inputs.enable := Bits.gnd;
-  inputs.turn_amnt := Bits.zero 32;
+  inputs.turn_amnt_day1 := Bits.zero 32;
   
   Cyclesim.cycle sim;
 
@@ -40,12 +38,12 @@ let () =
         let num_str = String.sub line ~pos:1 ~len:(String.length line - 1) in
         let abs_num = Int.of_string num_str in
         let value = match sign_ch with
-          | 'L' -> -(abs_num % dial_size)
-          | 'R' -> (abs_num % dial_size)
+          | 'L' -> -(abs_num)
+          | 'R' -> (abs_num)
           | _ -> failwith (sprintf "Invalid leading char %c" sign_ch)
         in
 
-        inputs.turn_amnt := Bits.of_int_trunc ~width:32 value;
+        inputs.turn_amnt_day1 := Bits.of_int_trunc ~width:32 value;
         Cyclesim.cycle sim;
 
         let output_val = Bits.to_signed_int !(outputs.res_day1) in
@@ -60,6 +58,7 @@ let () =
   for _ = 1 to 10 do
     Cyclesim.cycle sim;
   done;
+  printf "Day1pt1 result: %d \n" (Bits.to_signed_int !(outputs.res_day1))
   
   (* Show waveform *)
   (*Waveform.print ~display_height:10 ~display_width:500 waves;*)
